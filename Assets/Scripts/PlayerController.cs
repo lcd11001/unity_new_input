@@ -1,16 +1,85 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
     [SerializeField] float rotateSpeed;
+
+    [SerializeField] GameObject Tap, Hold, HoldReleased, HoldReleasedSuccess, HoldReleasedCancel;
+
     Vector2 _movement;
+
+#if ENABLE_INPUT_SYSTEM
+    // This method is called by PlayerInput with behavior SendMessages
     private void OnMovement(InputValue value)
     {
-        _movement = value.Get<Vector2>();
+        MoveInput(value.Get<Vector2>());
+    }
+
+    // This method is called by PlayerInput with behavior Invoke Unity Events
+    public void OnMovement(InputAction.CallbackContext context)
+    {
+        MoveInput(context.ReadValue<Vector2>());
+    }
+
+    public void OnInteraction(InputAction.CallbackContext context)
+    {
+        SetAllInactive();
+
+        switch (context.phase)
+        {
+            case InputActionPhase.Started:
+                //Debug.Log($"{context.interaction} Started");
+                if (context.interaction is SlowTapInteraction)
+                {
+                    Hold.SetActive(true);
+                }
+                break;
+            case InputActionPhase.Performed:
+                //Debug.Log($"{context.interaction} Performed");
+                if (context.interaction is SlowTapInteraction)
+                {
+                    HoldReleased.SetActive(true);
+                    HoldReleasedSuccess.SetActive(true);
+                }
+                else
+                {
+                    Tap.SetActive(true);
+                }
+                break;
+            case InputActionPhase.Canceled:
+                //Debug.Log($"{context.interaction} Canceled");
+                HoldReleased.SetActive(true);
+                HoldReleasedCancel.SetActive(true);
+                break;
+            default:
+                break;
+        }
+    }
+#endif
+
+    private void SetAllInactive()
+    {
+        Tap.SetActive(false);
+        Hold.SetActive(false);
+        HoldReleased.SetActive(false);
+        HoldReleasedSuccess.SetActive(false);
+        HoldReleasedCancel.SetActive(false);
+    }
+
+    private void MoveInput(Vector2 newMove)
+    {
+        _movement = newMove;
+    }
+
+    private void Awake()
+    {
+        SetAllInactive();
     }
 
     private void Update()
