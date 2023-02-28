@@ -1403,6 +1403,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 334da2bb-dabc-454f-9b2a-ea9cd7c903b3
     m_ActionName: Gameplay/TouchPosition[/Mouse/position]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1762202903}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnTouchPress
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2bdf6fb5-0128-4dae-b9e8-c13170b561e7
+    m_ActionName: Gameplay/TouchPress[/Mouse/press]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay

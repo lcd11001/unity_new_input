@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
 
     Vector2 _movement;
     Vector3 _touchPosition;
+    bool isTouchPressed = false;
 
 #if ENABLE_INPUT_SYSTEM
     // This method is called by PlayerInput with behavior SendMessages
@@ -69,13 +70,27 @@ public class PlayerController : MonoBehaviour
     {
         switch (context.phase)
         {
-            case InputActionPhase.Canceled:
             case InputActionPhase.Performed:
                 TouchPositionInput(context.ReadValue<Vector2>());
                 break;
             //case InputActionPhase.Canceled:
             //    TouchPositionInput(Vector3.zero);
             //    break;
+            default:
+                break;
+        }
+    }
+
+    public void OnTouchPress(InputAction.CallbackContext context)
+    {
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                isTouchPressed = true;
+                break;
+            case InputActionPhase.Canceled:
+                isTouchPressed = false;
+                break;
             default:
                 break;
         }
@@ -98,11 +113,14 @@ public class PlayerController : MonoBehaviour
 
     private void TouchPositionInput(Vector3 newPos)
     {
-        Ray ray = cam.ScreenPointToRay(newPos);
-        int layer = 1 << LayerMask.NameToLayer("Ground");
-        if (Physics.Raycast(ray, out RaycastHit info, 100f, layer))
+        //if (isTouchPressed)
         {
-            _touchPosition = info.point;
+            Ray ray = cam.ScreenPointToRay(newPos);
+            int layer = 1 << LayerMask.NameToLayer("Ground");
+            if (Physics.Raycast(ray, out RaycastHit info, 100f, layer))
+            {
+                _touchPosition = info.point;
+            }
         }
     }
 
@@ -121,16 +139,19 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
         }
 
-        if (_touchPosition != Vector3.zero)
+        if (isTouchPressed)
         {
             Vector3 facingDirection = _touchPosition - transform.position;
             float targetAngle = Mathf.Atan2(facingDirection.x, facingDirection.z) * Mathf.Rad2Deg;
             float angle = Mathf.LerpAngle(transform.rotation.eulerAngles.y, targetAngle, rotateSpeed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+            transform.position += (facingDirection.normalized * moveSpeed * Time.deltaTime);
         }
 
         if (debugSphere != null)
         {
+            //debugSphere.gameObject.SetActive(isTouchPressed);
             debugSphere.position = _touchPosition;
         }
     }
