@@ -133,21 +133,18 @@ public class PlayerController : MonoBehaviour
     {
         if (_movement != Vector2.zero)
         {
-            float targetAngle = Mathf.Atan2(_movement.x, _movement.y) * Mathf.Rad2Deg;
-            float angle = Mathf.LerpAngle(transform.rotation.eulerAngles.y, targetAngle, rotateSpeed * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
-        
-            transform.position += new Vector3(_movement.x, 0, _movement.y) * moveSpeed * Time.deltaTime;
+            Vector3 direction = new Vector3(_movement.x, 0, _movement.y);
+
+            PlayerRotate(direction);
+            PlayerMove(direction);
         }
 
         if (isTouchPressed)
         {
             Vector3 facingDirection = _touchPosition - transform.position;
-            float targetAngle = Mathf.Atan2(facingDirection.x, facingDirection.z) * Mathf.Rad2Deg;
-            float angle = Mathf.LerpAngle(transform.rotation.eulerAngles.y, targetAngle, rotateSpeed * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
-            transform.position += (facingDirection.normalized * moveSpeed * Time.deltaTime);
+            PlayerRotate(facingDirection);
+            PlayerMove(facingDirection);
         }
 
         if (debugSphere != null)
@@ -155,5 +152,17 @@ public class PlayerController : MonoBehaviour
             debugSphere.gameObject.SetActive(isTouchPressed);
             debugSphere.position = _touchPosition;
         }
+    }
+
+    private void PlayerRotate(Vector3 direction)
+    {
+        float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+        float angle = Mathf.LerpAngle(transform.rotation.eulerAngles.y, targetAngle, rotateSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+    }
+
+    private void PlayerMove(Vector3 direction)
+    {
+        transform.position += (direction.normalized * moveSpeed * Time.deltaTime);
     }
 }
