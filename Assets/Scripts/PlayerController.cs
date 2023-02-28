@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
 
         if (debugSphere != null)
         {
-            //debugSphere.gameObject.SetActive(isTouchPressed);
+            debugSphere.gameObject.SetActive(isTouchPressed);
             debugSphere.position = _touchPosition;
         }
     }
